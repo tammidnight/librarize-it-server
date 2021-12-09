@@ -14,11 +14,11 @@ const bookSchema = new Schema(
     },
     description: String,
     status: String,
-    isbn_13: {
+    isbn13: {
       type: String,
       unique: true,
     },
-    isbn_10: {
+    isbn10: {
       type: String,
       unique: true,
     },
