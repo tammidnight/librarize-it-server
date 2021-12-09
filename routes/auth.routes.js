@@ -1,6 +1,10 @@
 const router = require("express").Router();
 const bcrypt = require("bcryptjs");
 const User = require("../models/User.model");
+const {
+  validateSignUpInput,
+  validateLoginInput,
+} = require("../utilities/validators");
 
 const isLoggedIn = (req, res, next) => {
   if (req.session.loggedInUser) {
@@ -14,31 +18,17 @@ const isLoggedIn = (req, res, next) => {
 };
 
 router.post("/signup", (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, email, password, confirmPassword } = req.body;
 
-  if (!username || !email || !password) {
-    res.status(500).json({
-      errorMessage: "Please enter username, email and password",
-    });
-    return;
-  }
-  const myRegex = new RegExp(
-    /^[a-z0-9](?!.*?[^\na-z0-9]{2})[^\s@]+@[^\s@]+\.[^\s@]+[a-z0-9]$/
+  const { notValid, errors } = validateSignUpInput(
+    username,
+    email,
+    password,
+    confirmPassword
   );
-  if (!myRegex.test(email)) {
-    res.status(500).json({
-      errorMessage: "Email format not correct",
-    });
-    return;
-  }
-  const myPassRegex = new RegExp(
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/
-  );
-  if (!myPassRegex.test(password)) {
-    res.status(500).json({
-      errorMessage:
-        "Password needs to have 8 characters, a number and an Uppercase character",
-    });
+
+  if (notValid) {
+    res.status(400).json(errors);
     return;
   }
 
@@ -51,11 +41,21 @@ router.post("/signup", (req, res) => {
       res.status(200).json(user);
     })
     .catch((err) => {
+      let error = {};
+
       if (err.code === 11000) {
-        res.status(500).json({
-          errorMessage: "username or email entered already exists!",
-          message: err,
-        });
+        if (Object.keys(err.keyValue)[0] === "username") {
+          error[
+            Object.keys(err.keyValue)[0]
+          ] = `Username ${err.keyValue.username} already exists!`;
+          error.message = err;
+        } else {
+          error[
+            Object.keys(err.keyValue)[0]
+          ] = `E-Mail ${err.keyValue.email} already exists!`;
+          error.message = err;
+        }
+        res.status(400).json(error);
       } else {
         res.status(500).json({
           errorMessage: "Something went wrong!",
@@ -68,10 +68,10 @@ router.post("/signup", (req, res) => {
 router.post("/login", (req, res) => {
   const { username, password } = req.body;
 
-  if (!username || !password) {
-    res.status(500).json({
-      error: "Please enter Username and password",
-    });
+  const { notValid, errors } = validateLoginInput(username, password);
+
+  if (notValid) {
+    res.status(400).json(errors);
     return;
   }
 
@@ -83,13 +83,13 @@ router.post("/login", (req, res) => {
         req.session.loggedInUser = user;
         res.status(200).json(user);
       } else {
-        res.status(500).json({
+        res.status(400).json({
           error: "Passwords don't match",
         });
       }
     })
     .catch((err) => {
-      res.status(500).json({
+      res.status(400).json({
         error: "Username does not exist",
         message: err,
       });
