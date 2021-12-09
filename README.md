@@ -79,18 +79,22 @@ librarize it is a web application to sort your books into digital libraries. You
 
 ## Routes
 
-| HTTP Method | URL             |
-| ----------- | --------------- |
-| POST        | /signup         |
-| POST        | /login          |
-| POST        | /logout         |
-| GET         | /profile/:id    |
-| POST        | /create-library |
-| GET         | /library/:id    |
-| POST        | /library/:id    |
-| POST        | /add-book       |
-| GET         | /book/:id       |
-| POST        | /book/:id       |
+| HTTP Method | URL                 |
+| ----------- | ------------------- |
+| POST        | /signup             |
+| POST        | /login              |
+| POST        | /logout             |
+| GET         | /profile/:id        |
+| PATCH       | /profile/:id        |
+| DELETE      | /profile/:id/delete |
+| POST        | /create-library     |
+| GET         | /library/:id        |
+| PATCH       | /library/:id        |
+| DELETE      | /library/:id/delete |
+| POST        | /add-book           |
+| GET         | /book/:id           |
+| PATCH       | /book/:id           |
+| DELETE      | /book/:id/delete    |
 
 ## Models
 
