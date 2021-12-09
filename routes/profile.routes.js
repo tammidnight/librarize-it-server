@@ -2,7 +2,7 @@ const router = require("express").Router();
 const User = require("../models/User.model");
 
 router.get("/profile/:id", (req, res) => {
-  let _id = req.session.loggedInUser._id;
+  const _id = req.session.loggedInUser._id;
 
   User.findById({ _id })
     .populate("libraries")
