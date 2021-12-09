@@ -9,16 +9,23 @@ const bookSchema = new Schema(
       required: true,
     },
     author: {
-      type: String,
+      type: Array,
       required: true,
     },
     description: String,
     status: String,
-    isbn: String,
+    isbn_13: {
+      type: String,
+      unique: true,
+    },
+    isbn_10: {
+      type: String,
+      unique: true,
+    },
     pages: Number,
-    published: Number,
+    published: String,
     image: String,
-    genre: String,
+    genre: Array,
     libraries: [
       {
         type: Schema.Types.ObjectId,
