@@ -87,8 +87,10 @@ librarize it is a web application to sort your books into digital libraries. You
 | GET         | /profile/:id    |
 | POST        | /create-library |
 | GET         | /library/:id    |
+| POST        | /library/:id    |
 | POST        | /add-book       |
 | GET         | /book/:id       |
+| POST        | /book/:id       |
 
 ## Models
 
