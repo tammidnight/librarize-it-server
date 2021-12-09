@@ -1,6 +1,6 @@
 const { Schema, model } = require("mongoose");
-import "./User.model";
-import "./Library.model";
+require("./User.model");
+require("./Library.model");
 
 const bookSchema = new Schema(
   {

@@ -1,6 +1,6 @@
 const { Schema, model } = require("mongoose");
-import "./User.model";
-import "./Book.model";
+require("./User.model");
+require("./Book.model");
 
 const librarySchema = new Schema(
   {
@@ -9,7 +9,7 @@ const librarySchema = new Schema(
       required: true,
     },
     description: String,
-    publicLibrary: boolean,
+    publicLibrary: Boolean,
     books: [
       {
         type: Schema.Types.ObjectId,
