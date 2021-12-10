@@ -3,6 +3,8 @@ const { default: axios } = require("axios");
 const Book = require("../models/Book.model");
 const mongoose = require("mongoose");
 const Library = require("../models/Library.model");
+const { find } = require("../models/Book.model");
+const User = require("../models/User.model");
 
 router.post("/add-book", async (req, res) => {
   const { isbn, library } = req.body;
@@ -14,15 +16,23 @@ router.post("/add-book", async (req, res) => {
   try {
     if (isbn.length === 13) {
       response = await Book.findOneAndUpdate(
-        { isbn_13: isbn },
+        { isbn13: isbn },
         { $addToSet: { user: currentUser, libraries: currentLibrary } },
         { new: true }
       );
+      await Library.findByIdAndUpdate(
+        { _id: currentLibrary },
+        { $addToSet: { books: response._id } }
+      );
     } else if (isbn.length === 10) {
       response = await Book.findOneAndUpdate(
-        { isbn_10: isbn },
+        { isbn10: isbn },
         { $addToSet: { user: currentUser, libraries: currentLibrary } },
         { new: true }
+      );
+      await Library.findByIdAndUpdate(
+        { _id: currentLibrary },
+        { $addToSet: { books: response._id } }
       );
     }
 
@@ -46,12 +56,16 @@ router.post("/add-book", async (req, res) => {
         return elem.name;
       });
 
+      if (description) {
+        description = description.value;
+      }
+
       let newBook = {
         title,
         author,
-        description,
-        isbn_13: isbn_13[0],
-        isbn_10: isbn_10[0],
+        description: description,
+        isbn13: isbn_13[0],
+        isbn10: isbn_10[0],
         pages: number_of_pages,
         published: publish_date,
         image: `https://covers.openlibrary.org/b/isbn/${isbn}-M.jpg`,
@@ -93,8 +107,48 @@ router.get("/book/:id", (req, res) => {
     });
 });
 
-router.patch("/book/:id", (req, res) => {});
+router.patch("/book/:id", (req, res) => {
+  //TODO
+});
 
-router.delete("/book/:id/delete", (req, res) => {});
+router.patch("/library/:libraryId/book/:id/delete", async (req, res) => {
+  const userId = req.session.loggedInUser._id;
+  const { id, libraryId } = req.params;
+
+  try {
+    let update = {};
+    let bookResponse = await Book.findById({ _id: id });
+
+    let libraryIds = bookResponse.libraries.map((elem) => {
+      return mongoose.Types.ObjectId(elem._id);
+    });
+
+    let userResponse = await User.find({ libraries: { $in: libraryIds } });
+
+    if (userResponse[0].libraries.length > 1) {
+      update = { libraries: libraryId };
+    } else if (userResponse[0].libraries.length === 1) {
+      update = { libraries: libraryId, user: userId };
+    }
+
+    let book = await Book.findByIdAndUpdate(
+      { _id: id },
+      { $pull: update },
+      { new: true }
+    );
+
+    await Library.findByIdAndUpdate(
+      { _id: libraryId },
+      { $pull: { books: id } }
+    );
+
+    res.status(200).json(book);
+  } catch (err) {
+    res.status(500).json({
+      errorMessage: "Something went wrong!",
+      message: err,
+    });
+  }
+});
 
 module.exports = router;
