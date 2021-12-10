@@ -1,4 +1,5 @@
 const router = require("express").Router();
+const Book = require("../models/Book.model");
 const Library = require("../models/Library.model");
 const User = require("../models/User.model");
 
@@ -71,6 +72,22 @@ router.patch("/library/:id", (req, res) => {
     });
 });
 
-router.delete("/library/:id/delete", (req, res) => {});
+router.delete("/library/:id/delete", async (req, res) => {
+  const userId = req.session.loggedInUser._id;
+  const { id } = req.params;
+
+  try {
+    await Book.updateMany({ libraries: id }, { $pull: { libraries: id } });
+    await User.findByIdAndUpdate({ _id: userId }, { $pull: { libraries: id } });
+    await Library.findByIdAndDelete({ _id: id });
+
+    res.status(200).json({});
+  } catch (err) {
+    res.status(500).json({
+      errorMessage: "Something went wrong!",
+      message: err,
+    });
+  }
+});
 
 module.exports = router;
