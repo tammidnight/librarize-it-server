@@ -24,7 +24,7 @@ router.get("/profile/:id", (req, res) => {
 
 router.patch("/profile/:id", async (req, res) => {
   const _id = req.session.loggedInUser._id;
-  let { username, email, password, newPassword } = req.body;
+  let { username, email, password, newPassword, image, favorites } = req.body;
 
   try {
     let response = await User.findById({ _id });
@@ -62,7 +62,7 @@ router.patch("/profile/:id", async (req, res) => {
 
       let user = await User.findByIdAndUpdate(
         { _id },
-        { username, email, password: hash },
+        { username, email, password: hash, image, favorites },
         { new: true, runValidators: true }
       );
       user.password = "***";
@@ -111,6 +111,36 @@ router.delete("/profile/:id/delete", async (req, res) => {
 
     req.session.destroy();
     res.status(204).json({});
+  } catch (err) {
+    res.status(500).json({
+      errorMessage: "Something went wrong!",
+      message: err,
+    });
+  }
+});
+
+router.patch("/favorites", async (req, res) => {
+  const _id = req.session.loggedInUser._id;
+  let { newFavorite, label } = req.body;
+
+  try {
+    let user = null;
+    if (newFavorite) {
+      user = await User.findByIdAndUpdate(
+        { _id },
+        { $addToSet: { favorites: newFavorite } },
+        { new: true }
+      );
+    } else if (label) {
+      user = await User.findByIdAndUpdate(
+        { _id },
+        { $pull: { favorites: label } },
+        { new: true }
+      );
+    }
+    user.password = "***";
+    req.session.loggedInUser = user;
+    res.status(200).json(user);
   } catch (err) {
     res.status(500).json({
       errorMessage: "Something went wrong!",

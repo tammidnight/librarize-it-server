@@ -18,7 +18,7 @@ const userSchema = new Schema(
       required: true,
     },
     image: String,
-    favorites: [{ String }],
+    favorites: [String],
     libraries: [
       {
         type: Schema.Types.ObjectId,
