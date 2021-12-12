@@ -49,6 +49,9 @@ app.use("/api", libraryRoutes);
 const bookRoutes = require("./routes/book.routes");
 app.use("/api", bookRoutes);
 
+const fileUploadRoutes = require("./routes/file-upload.routes");
+app.use("/api", fileUploadRoutes);
+
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
 require("./error-handling")(app);
 

@@ -23,11 +23,11 @@ router.get("/profile/:id", (req, res) => {
 });
 
 router.patch("/profile/:id", async (req, res) => {
-  const _id = req.session.loggedInUser._id;
-  let { username, email, password, newPassword, image, favorites } = req.body;
+  const { id } = req.params;
+  let { username, email, password, newPassword, image } = req.body;
 
   try {
-    let response = await User.findById({ _id });
+    let response = await User.findById({ _id: id });
     let matchingPW = bcrypt.compareSync(password, response.password);
 
     if (!matchingPW) {
@@ -35,13 +35,13 @@ router.patch("/profile/:id", async (req, res) => {
         errorMessage: "Please enter your current password!",
       });
     } else {
-      if (username === "") {
+      if (!username) {
         username = response.username;
       }
-      if (email === "") {
+      if (!email) {
         email = response.email;
       }
-      if (newPassword === "") {
+      if (!newPassword) {
         newPassword = password;
       }
 
@@ -61,8 +61,8 @@ router.patch("/profile/:id", async (req, res) => {
       let hash = bcrypt.hashSync(newPassword, salt);
 
       let user = await User.findByIdAndUpdate(
-        { _id },
-        { username, email, password: hash, image, favorites },
+        { _id: id },
+        { username, email, password: hash, image },
         { new: true, runValidators: true }
       );
       user.password = "***";
