@@ -20,20 +20,24 @@ router.post("/add-book", async (req, res) => {
         { $addToSet: { user: currentUser, libraries: currentLibrary } },
         { new: true }
       );
-      await Library.findByIdAndUpdate(
-        { _id: currentLibrary },
-        { $addToSet: { books: response._id } }
-      );
+      if (response) {
+        await Library.findByIdAndUpdate(
+          { _id: currentLibrary },
+          { $addToSet: { books: response._id } }
+        );
+      }
     } else if (isbn.length === 10) {
       response = await Book.findOneAndUpdate(
         { isbn10: isbn },
         { $addToSet: { user: currentUser, libraries: currentLibrary } },
         { new: true }
       );
-      await Library.findByIdAndUpdate(
-        { _id: currentLibrary },
-        { $addToSet: { books: response._id } }
-      );
+      if (response) {
+        await Library.findByIdAndUpdate(
+          { _id: currentLibrary },
+          { $addToSet: { books: response._id } }
+        );
+      }
     }
 
     if (!response) {
@@ -52,20 +56,34 @@ router.post("/add-book", async (req, res) => {
         isbn_10,
       } = apiRes.data[`ISBN:${isbn}`].details;
 
-      let author = authors.map((elem) => {
-        return elem.name;
-      });
+      let author = null;
+
+      if (authors) {
+        author = authors.map((elem) => {
+          return elem.name;
+        });
+      }
 
       if (description) {
         description = description.value;
+      }
+
+      let isbn13 = null;
+      let isbn10 = null;
+
+      if (isbn_13) {
+        isbn13 = isbn_13[0];
+      }
+      if (isbn_10) {
+        isbn10 = isbn_10[0];
       }
 
       let newBook = {
         title,
         author,
         description: description,
-        isbn13: isbn_13[0],
-        isbn10: isbn_10[0],
+        isbn13,
+        isbn10,
         pages: number_of_pages,
         published: publish_date,
         image: `https://covers.openlibrary.org/b/isbn/${isbn}-M.jpg`,
