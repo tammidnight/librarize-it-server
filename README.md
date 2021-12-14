@@ -54,7 +54,6 @@ librarize it is a web application to sort your books into digital libraries. You
 | /library/:id                  | Navbar, FooterNavigation, LibraryDetail, AddBook | user only   | Show the library with the books in it and give the option to add a book |
 | /library/:id/edit             | Navbar, FooterNaviagtion, EditLibrary            | user only   | Edit the selected library                                               |
 | /book/:id                     | Navbar, FooterNavigation, BookDetail             | user only   | Show the details of the selected book                                   |
-| /message/:id                  |                                                  | user only   |                                                                         |
 
 ## Components
 

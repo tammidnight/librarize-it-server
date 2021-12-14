@@ -124,7 +124,20 @@ router.get("/book/:id", (req, res) => {
 });
 
 router.patch("/book/:id", (req, res) => {
-  //TODO
+  const { id } = req.params;
+  const { author } = req.body;
+
+  Book.findByIdAndUpdate({ _id: id }, { author })
+    .populate("libraries")
+    .then((book) => {
+      res.status(200).json(book);
+    })
+    .catch((err) => {
+      res.status(500).json({
+        errorMessage: "Something went wrong!",
+        message: err,
+      });
+    });
 });
 
 router.patch("/library/:libraryId/book/:id/delete", async (req, res) => {
@@ -186,7 +199,7 @@ router.get("/book/:id/rating", async (req, res) => {
 router.post("/book/:id/rating", async (req, res) => {
   const _id = req.session.loggedInUser._id;
   const { id } = req.params;
-  const { ratingValue, review } = req.body;
+  const { ratingValue, review, status } = req.body;
   let reviewDB = null;
   let rating = null;
 
@@ -207,6 +220,14 @@ router.post("/book/:id/rating", async (req, res) => {
       rating = await Rating.findOneAndUpdate(
         { $and: [{ user: _id }, { book: id }] },
         { ratingValue },
+        { new: true, upsert: true }
+      );
+    }
+
+    if (status) {
+      rating = await Rating.findOneAndUpdate(
+        { $and: [{ user: _id }, { book: id }] },
+        { status },
         { new: true, upsert: true }
       );
     }
