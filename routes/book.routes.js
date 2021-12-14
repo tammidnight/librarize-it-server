@@ -3,8 +3,8 @@ const { default: axios } = require("axios");
 const Book = require("../models/Book.model");
 const mongoose = require("mongoose");
 const Library = require("../models/Library.model");
-const { find } = require("../models/Book.model");
 const User = require("../models/User.model");
+const Rating = require("../models/RatingReview.model");
 
 router.post("/add-book", async (req, res) => {
   const { isbn, library } = req.body;
@@ -51,7 +51,6 @@ router.post("/add-book", async (req, res) => {
         description,
         number_of_pages,
         publish_date,
-        subjects,
         isbn_13,
         isbn_10,
       } = apiRes.data[`ISBN:${isbn}`].details;
@@ -87,7 +86,6 @@ router.post("/add-book", async (req, res) => {
         pages: number_of_pages,
         published: publish_date,
         image: `https://covers.openlibrary.org/b/isbn/${isbn}-M.jpg`,
-        genre: subjects,
         libraries: [currentLibrary],
         user: [currentUser],
       };
@@ -161,6 +159,59 @@ router.patch("/library/:libraryId/book/:id/delete", async (req, res) => {
     );
 
     res.status(200).json(book);
+  } catch (err) {
+    res.status(500).json({
+      errorMessage: "Something went wrong!",
+      message: err,
+    });
+  }
+});
+
+router.get("/book/:id/rating", async (req, res) => {
+  const _id = req.session.loggedInUser._id;
+  const { id } = req.params;
+
+  try {
+    let rating = await Rating.findOne({ $and: [{ user: _id }, { book: id }] });
+
+    res.status(200).json(rating);
+  } catch (err) {
+    res.status(500).json({
+      errorMessage: "Something went wrong!",
+      message: err,
+    });
+  }
+});
+
+router.post("/book/:id/rating", async (req, res) => {
+  const _id = req.session.loggedInUser._id;
+  const { id } = req.params;
+  const { ratingValue, review } = req.body;
+  let reviewDB = null;
+  let rating = null;
+
+  if (review) {
+    reviewDB = { value: review, created: new Date() };
+  }
+
+  try {
+    if (review) {
+      rating = await Rating.findOneAndUpdate(
+        { $and: [{ user: _id }, { book: id }] },
+        { review: reviewDB },
+        { new: true, upsert: true }
+      );
+    }
+
+    if (ratingValue) {
+      rating = await Rating.findOneAndUpdate(
+        { $and: [{ user: _id }, { book: id }] },
+        { ratingValue },
+        { new: true, upsert: true }
+      );
+    }
+
+    res.status(200).json(rating);
   } catch (err) {
     res.status(500).json({
       errorMessage: "Something went wrong!",

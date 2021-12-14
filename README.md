@@ -79,23 +79,25 @@ librarize it is a web application to sort your books into digital libraries. You
 
 ## Routes
 
-| HTTP Method | URL                                |
-| ----------- | ---------------------------------- |
-| POST        | /signup                            |
-| POST        | /login                             |
-| POST        | /logout                            |
-| GET         | /profile/:id                       |
-| PATCH       | /profile/:id                       |
-| DELETE      | /profile/:id/delete                |
-| PATCH       | /favorites                         |
-| POST        | /create-library                    |
-| GET         | /library/:id                       |
-| PATCH       | /library/:id                       |
-| DELETE      | /library/:id/delete                |
-| POST        | /add-book                          |
-| GET         | /book/:id                          |
-| PATCH       | /book/:id                          |
-| PATCH       | library/:libraryId/book/:id/delete |
+| HTTP Method | URL                                 |
+| ----------- | ----------------------------------- |
+| POST        | /signup                             |
+| POST        | /login                              |
+| POST        | /logout                             |
+| GET         | /profile/:id                        |
+| PATCH       | /profile/:id                        |
+| DELETE      | /profile/:id/delete                 |
+| PATCH       | /favorites                          |
+| POST        | /create-library                     |
+| GET         | /library/:id                        |
+| PATCH       | /library/:id                        |
+| DELETE      | /library/:id/delete                 |
+| POST        | /add-book                           |
+| GET         | /book/:id                           |
+| PATCH       | /book/:id                           |
+| PATCH       | /library/:libraryId/book/:id/delete |
+| GET         | /book/:id/rating                    |
+| POST        | /book/:id/rating                    |
 
 ## Models
 
@@ -152,6 +154,7 @@ librarize it is a web application to sort your books into digital libraries. You
   ```
 
 - Book:
+
   ```jsx
   {
   	title: {
@@ -172,6 +175,27 @@ librarize it is a web application to sort your books into digital libraries. You
   	libraries: [{
   		type: Schema.Types.ObjectId,
   		ref: "Library",
+  	}],
+  	user: [{
+  		type: Schema.Types.ObjectId,
+  		ref: "User",
+  	}],
+  },
+  {
+  	timestamps: true
+  }
+  ```
+
+  - RatingReview:
+
+  ```jsx
+  {
+  	ratingValue: Number,
+  	review: { value: String, created: Date },
+    status: String,
+  	book: [{
+  		type: Schema.Types.ObjectId,
+  		ref: "Book",
   	}],
   	user: [{
   		type: Schema.Types.ObjectId,

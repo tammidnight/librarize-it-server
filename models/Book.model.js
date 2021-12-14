@@ -22,7 +22,6 @@ const bookSchema = new Schema(
     pages: Number,
     published: String,
     image: String,
-    genre: Array,
     libraries: [
       {
         type: Schema.Types.ObjectId,
