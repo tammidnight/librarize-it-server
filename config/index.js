@@ -20,12 +20,29 @@ module.exports = (app) => {
   app.set("trust proxy", 1);
 
   // controls a very specific header to pass headers from the frontend
-  app.use(
-    cors({
-      credentials: true,
-      origin: process.env.ORIGIN || "http://localhost:3000",
-    })
-  );
+  app.use(function (req, res, next) {
+    var allowedDomains = [
+      "http://localhost:3000",
+      "http://librarize.it",
+      "https://librarize-it.herokuapp.com",
+    ];
+    var origin = req.headers.origin;
+    if (allowedDomains.indexOf(origin) > -1) {
+      res.setHeader("Access-Control-Allow-Origin", origin);
+    }
+
+    res.setHeader(
+      "Access-Control-Allow-Methods",
+      "GET, POST, OPTIONS, PUT, PATCH, DELETE"
+    );
+    res.setHeader(
+      "Access-Control-Allow-Headers",
+      "X-Requested-With,content-type, Accept"
+    );
+    res.setHeader("Access-Control-Allow-Credentials", true);
+
+    next();
+  });
 
   // In development environment the app logs
   app.use(logger("dev"));
