@@ -32,6 +32,9 @@ app.use(
 // ℹ️ This function is getting exported from the config folder. It runs most pieces of middleware
 require("./config")(app);
 
+const path = require("path");
+app.use(express.static(path.join(__dirname, "public")));
+
 // 👇 Start handling routes here
 // Contrary to the views version, all routes are controlled from the routes/index.js
 const allRoutes = require("./routes");
