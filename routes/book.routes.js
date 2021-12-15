@@ -241,4 +241,24 @@ router.post("/book/:id/rating", async (req, res) => {
   }
 });
 
+router.patch("/book/:id/review", async (req, res) => {
+  const _id = req.session.loggedInUser._id;
+  const { id } = req.params;
+
+  try {
+    let rating = await Rating.findOneAndUpdate(
+      { $and: [{ user: _id }, { book: id }] },
+      { $unset: { review: 1 } },
+      { new: true }
+    );
+
+    res.status(200).json(rating);
+  } catch (err) {
+    res.status(500).json({
+      errorMessage: "Something went wrong!",
+      message: err,
+    });
+  }
+});
+
 module.exports = router;

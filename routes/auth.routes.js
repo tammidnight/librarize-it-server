@@ -48,12 +48,12 @@ router.post("/signup", (req, res) => {
           error[
             Object.keys(err.keyValue)[0]
           ] = `Username ${err.keyValue.username} already exists!`;
-          error.message = err;
+          error.username = err;
         } else {
           error[
             Object.keys(err.keyValue)[0]
           ] = `E-Mail ${err.keyValue.email} already exists!`;
-          error.message = err;
+          error.email = err;
         }
         res.status(400).json(error);
       } else {
