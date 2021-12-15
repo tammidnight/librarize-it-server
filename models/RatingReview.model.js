@@ -5,7 +5,7 @@ require("./Book.model");
 const ratingSchema = new Schema(
   {
     ratingValue: Number,
-    review: { value: String, created: Date },
+    review: { value: String, created: Date, publicReview: Boolean },
     status: String,
     book: {
       type: Schema.Types.ObjectId,

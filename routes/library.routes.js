@@ -72,6 +72,23 @@ router.patch("/library/:id", (req, res) => {
     });
 });
 
+router.get("/libraries/:userId/:bookId", (req, res) => {
+  const { userId, bookId } = req.params;
+
+  Library.find({
+    $and: [{ user: userId }, { books: { $ne: bookId } }],
+  })
+    .then((library) => {
+      res.status(200).json(library);
+    })
+    .catch((err) => {
+      res.status(500).json({
+        errorMessage: "Something went wrong!",
+        message: err,
+      });
+    });
+});
+
 router.delete("/library/:id/delete", async (req, res) => {
   const userId = req.session.loggedInUser._id;
   const { id } = req.params;

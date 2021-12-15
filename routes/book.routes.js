@@ -12,6 +12,7 @@ router.post("/add-book", async (req, res) => {
   const currentUser = mongoose.Types.ObjectId(_id);
   const currentLibrary = mongoose.Types.ObjectId(library);
   let response = null;
+  console.log(isbn, library, _id);
 
   try {
     if (isbn.length === 13) {
@@ -63,12 +64,28 @@ router.post("/add-book", async (req, res) => {
         });
       }
 
+      let titleOfBook = null;
+      let pages = null;
+      let published = null;
+
+      if (title) {
+        titleOfBook = title;
+      }
+
+      if (number_of_pages) {
+        pages = number_of_pages;
+      }
+
+      if (publish_date) {
+        published = publish_date;
+      }
+
       if (description) {
         description = description.value;
       }
 
-      let isbn13 = null;
-      let isbn10 = null;
+      let isbn13 = "";
+      let isbn10 = "";
 
       if (isbn_13) {
         isbn13 = isbn_13[0];
@@ -78,13 +95,13 @@ router.post("/add-book", async (req, res) => {
       }
 
       let newBook = {
-        title,
+        title: titleOfBook,
         author,
-        description: description,
+        description,
         isbn13,
         isbn10,
-        pages: number_of_pages,
-        published: publish_date,
+        pages,
+        published,
         image: `https://covers.openlibrary.org/b/isbn/${isbn}-M.jpg`,
         libraries: [currentLibrary],
         user: [currentUser],
@@ -199,12 +216,12 @@ router.get("/book/:id/rating", async (req, res) => {
 router.post("/book/:id/rating", async (req, res) => {
   const _id = req.session.loggedInUser._id;
   const { id } = req.params;
-  const { ratingValue, review, status } = req.body;
+  const { ratingValue, review, publicReview, status } = req.body;
   let reviewDB = null;
   let rating = null;
 
   if (review) {
-    reviewDB = { value: review, created: new Date() };
+    reviewDB = { value: review, created: new Date(), publicReview };
   }
 
   try {
@@ -241,6 +258,21 @@ router.post("/book/:id/rating", async (req, res) => {
   }
 });
 
+router.get("/book/:id/review", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    let rating = await Rating.find({ book: id }).populate("user");
+
+    res.status(200).json(rating);
+  } catch (err) {
+    res.status(500).json({
+      errorMessage: "Something went wrong!",
+      message: err,
+    });
+  }
+});
+
 router.patch("/book/:id/review", async (req, res) => {
   const _id = req.session.loggedInUser._id;
   const { id } = req.params;
@@ -259,6 +291,36 @@ router.patch("/book/:id/review", async (req, res) => {
       message: err,
     });
   }
+});
+
+router.get("/book-overview", (req, res) => {
+  Rating.aggregate([
+    {
+      $group: {
+        _id: "$book",
+        avgRating: {
+          $avg: "$ratingValue",
+        },
+      },
+    },
+    {
+      $lookup: {
+        from: "books",
+        localField: "_id",
+        foreignField: "_id",
+        as: "book",
+      },
+    },
+  ])
+    .then((response) => {
+      res.status(200).json(response);
+    })
+    .catch((err) => {
+      res.status(500).json({
+        errorMessage: "Something went wrong!",
+        message: err,
+      });
+    });
 });
 
 module.exports = router;

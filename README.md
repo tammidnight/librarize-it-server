@@ -53,7 +53,9 @@ librarize it is a web application to sort your books into digital libraries. You
 | /profile/:id/library-overview | Navbar, FooterNavigation, LibraryOverview        | user only   | Show all libraries of the user                                          |
 | /library/:id                  | Navbar, FooterNavigation, LibraryDetail, AddBook | user only   | Show the library with the books in it and give the option to add a book |
 | /library/:id/edit             | Navbar, FooterNaviagtion, EditLibrary            | user only   | Edit the selected library                                               |
-| /book/:id                     | Navbar, FooterNavigation, BookDetail             | user only   | Show the details of the selected book                                   |
+| /library/:libraryId/book/:id  | Navbar, FooterNavigation, BookDetail             | user only   | Show the details of the selected book                                   |
+| /book-overview                | Navbar, FooterNavigation, BookOverview           | user only   | Show all books with ratings in database                                 |
+| /book/:id                     | Navbar, FooterNavigation, BookOverviewDetail     | user only   | Shows the details of the book with average rating and reviews           |
 
 ## Components
 
@@ -69,7 +71,8 @@ librarize it is a web application to sort your books into digital libraries. You
 - LibraryOverview
 - LibraryDetail
 - BookDetail
-- AddBook
+- BookOverview
+- BookOverviewDetail
 - LoadingScreen
 - NotFound
 - InternalError
@@ -91,6 +94,7 @@ librarize it is a web application to sort your books into digital libraries. You
 | GET         | /library/:id                        |
 | PATCH       | /library/:id                        |
 | DELETE      | /library/:id/delete                 |
+| GET         | /library/:userId/:bookId            |
 | POST        | /add-book                           |
 | GET         | /book/:id                           |
 | PATCH       | /book/:id                           |
@@ -98,6 +102,7 @@ librarize it is a web application to sort your books into digital libraries. You
 | GET         | /book/:id/rating                    |
 | POST        | /book/:id/rating                    |
 | PATCH       | /book/:id/review                    |
+| GET         | /book-overview                      |
 
 ## Models
 
