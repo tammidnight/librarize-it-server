@@ -4,7 +4,7 @@ const Library = require("../models/Library.model");
 const User = require("../models/User.model");
 
 router.post("/create-library", async (req, res) => {
-  const { title, description, publicLibrary } = req.body;
+  const { title, description /*  publicLibrary */ } = req.body;
   const _id = req.session.loggedInUser._id;
 
   if (!title) {
@@ -17,7 +17,7 @@ router.post("/create-library", async (req, res) => {
     let library = await Library.create({
       title,
       description,
-      publicLibrary,
+      /* publicLibrary, */
       user: _id,
     });
     await User.findByIdAndUpdate(
