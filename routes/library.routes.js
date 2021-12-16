@@ -61,6 +61,7 @@ router.patch("/library/:id", (req, res) => {
   }
 
   Library.findByIdAndUpdate({ _id }, { title, description, publicLibrary })
+    .populate("user")
     .then((library) => {
       res.status(200).json(library);
     })
