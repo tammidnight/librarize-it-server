@@ -14,15 +14,15 @@ librarize it is a web application to sort your books into digital libraries. You
 - **View library:** As a user I can see my own libraries and the public ones of other users
 - **Edit/Delete library:** As a user I can edit or delete my library
 - **Add books:** As a user I can add books to my libraries
-- **Add a status to books:** As a user I can create a status for a book (if I already read it, or just begun, etc.) - **Backlog**
-- **Review books:** As a user I can review/rate books - **Backlog**
+- **Add a status to books:** As a user I can create a status for a book (if I already read it, or just started, etc.)
+- **Review books:** As a user I can review/rate books
 - **Edit/Delete books:** As a user I can edit the status and rating of a book or delete the book from my library
 - **Book detail:** As a user I can see the details of a selected book
 - **Search Books:** As a user I can search for books with their ISBN
 - **Sort books:** As a user I can sort books - **Backlog**
 - **Get recommendations:** As a user I can get recommendations based on my read books - **Backlog**
 - **Get in contact with other users:** As a user I can chat with other users about the books - **Backlog**
-- **View** **my profile:** As a user I can view my profile with a list of my libraries
+- **View my profile:** As a user I can view my profile with a list of my libraries
 - **View other users profile:** As a user I can view the profile of other users and their libraries, that are set to public - **Backlog**
 - **Edit/Delete my profile:** As a user I can edit my general information or delete my account
 
@@ -46,7 +46,6 @@ librarize it is a web application to sort your books into digital libraries. You
 | /                             | Navbar, LandingPage                              | public      | Homepage                                                                |
 | /signup                       | Navbar, SignUp                                   | public      | Sign Up Form, navigate to profile after signed up                       |
 | /login                        | Navbar, LogIn                                    | public      | Log In Form, navigate to profile after logged in                        |
-| /logout                       |                                                  | user only   | Navigate to homepage after logout, expire session                       |
 | /profile/:id                  | Navbar, FooterNavigation, Profile                | user only   | Show User Profile                                                       |
 | /settings                     | Navbar, FooterNavigation, EditProfile            | user only   | Edit User Information                                                   |
 | /create-library               | Navbar, FooterNavigation, CreateLibrary          | user only   | Create a library                                                        |
@@ -86,75 +85,143 @@ librarize it is a web application to sort your books into digital libraries. You
 | POST        | /signup                             |
 | POST        | /login                              |
 | POST        | /logout                             |
+| GET         | /user                               |
 | GET         | /profile/:id                        |
 | PATCH       | /profile/:id                        |
 | DELETE      | /profile/:id/delete                 |
 | PATCH       | /favorites                          |
+| PATCH       | /view                               |
 | POST        | /create-library                     |
 | GET         | /library/:id                        |
 | PATCH       | /library/:id                        |
-| DELETE      | /library/:id/delete                 |
 | GET         | /library/:userId/:bookId            |
+| DELETE      | /library/:id/delete                 |
 | POST        | /add-book                           |
 | GET         | /book/:id                           |
 | PATCH       | /book/:id                           |
 | PATCH       | /library/:libraryId/book/:id/delete |
 | GET         | /book/:id/rating                    |
 | POST        | /book/:id/rating                    |
+| GET         | /book/:id/review                    |
 | PATCH       | /book/:id/review                    |
 | GET         | /book-overview                      |
+| POST        | /upload                             |
 
 ## Models
 
 - User:
   ```jsx
   {
-  	username: {
-  		type: String,
-  		unique: true,
-  		required: true,
-  	},
-  	email: {
-  		type: String,
-  		unique: true,
-  		required: true,
-  	},
-  	password: {
-  		type: String,
-  		required: true,
-  	},
-  	image: String,
-  	favorites: [{String}],
-  	libraries: [{
-  		type: Schema.Types.ObjectId,
-  		ref: "Library",
-  	}],
+    username: {
+      type: String,
+      unique: true,
+      required: true,
+    },
+    email: {
+      type: String,
+      unique: true,
+      required: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+    image: String,
+    favorites: [
+      {
+        type: String,
+        enum: [
+          "Action and adventure",
+          "Alternate history",
+          "Anthology",
+          "Art/architecture",
+          "Autobiography",
+          "Biography",
+          "Business/economics",
+          "Children's",
+          "Classic",
+          "Comic book",
+          "Coming-of-age",
+          "Crime",
+          "Crafts/hobbies",
+          "Cookbook",
+          "Dictionary",
+          "Drama",
+          "Encyclopedia",
+          "Fairytale",
+          "Fantasy",
+          "Graphic novel",
+          "Guide",
+          "Historical fiction",
+          "Horror",
+          "Health/fitness",
+          "History",
+          "Home and garden",
+          "Humor",
+          "Journal",
+          "Math",
+          "Memoir",
+          "Mystery",
+          "Paranormal romance",
+          "Picture book",
+          "Poetry",
+          "Political thriller",
+          "Philosophy",
+          "Prayer",
+          "Religion, spirituality, and new age",
+          "Romance",
+          "Review",
+          "Satire",
+          "Science fiction",
+          "Short story",
+          "Suspense",
+          "Science",
+          "Self help",
+          "Sports and leisure",
+          "Textbook",
+          "True crime",
+          "Travel",
+          "Thriller",
+          "Western",
+          "Young adult",
+        ],
+      },
+    ],
+    grid: Boolean,
+    libraries: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Library",
+      },
+    ],
   },
   {
-  	timestamps: true
+    timestamps: true,
   }
   ```
 - Library:
 
   ```jsx
   {
-  	title: {
-  		type: String,
-  		required: true,
-  	},
-  	description: String,
-  	publicLibrary: boolean,
-  	books: [{
-  		type: Schema.Types.ObjectId,
-  		ref: "Book",
-  	}],
-  	user: [{
-  		type: Schema.Types.ObjectId,
-  		ref: "User",
-  	}],
+    title: {
+      type: String,
+      required: true,
+    },
+    description: String,
+    publicLibrary: Boolean,
+    books: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Book",
+      },
+    ],
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
   },
   {
-  	timestamps: true
+    timestamps: true,
   }
   ```
 
@@ -162,64 +229,73 @@ librarize it is a web application to sort your books into digital libraries. You
 
   ```jsx
   {
-  	title: {
-  		type: String,
-  		required: true,
-  	},
-  	author: {
-  		type: String,
-  		required: true,
-  	},
-  	description: String,
-  	status: String,
-  	isbn: String,
-  	pages: Number,
-  	published: Number,
-  	image: String,
-  	genre: String,
-  	libraries: [{
-  		type: Schema.Types.ObjectId,
-  		ref: "Library",
-  	}],
-  	user: [{
-  		type: Schema.Types.ObjectId,
-  		ref: "User",
-  	}],
+    title: {
+      type: String,
+      required: true,
+    },
+    author: Array,
+    description: String,
+    status: String,
+    isbn13: {
+      type: String,
+      unique: true,
+    },
+    isbn10: {
+      type: String,
+      unique: true,
+    },
+    pages: Number,
+    published: String,
+    image: String,
+    libraries: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Library",
+      },
+    ],
+    user: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
   },
   {
-  	timestamps: true
+    timestamps: true,
   }
   ```
 
   - RatingReview:
 
   ```jsx
-  {
-  	ratingValue: Number,
-  	review: { value: String, created: Date },
+    {
+    ratingValue: Number,
+    review: { value: String, created: Date, publicReview: Boolean },
     status: String,
-  	book: [{
-  		type: Schema.Types.ObjectId,
-  		ref: "Book",
-  	}],
-  	user: [{
-  		type: Schema.Types.ObjectId,
-  		ref: "User",
-  	}],
+    book: {
+      type: Schema.Types.ObjectId,
+      ref: "Book",
+    },
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
   },
   {
-  	timestamps: true
+    timestamps: true,
   }
   ```
 
 # Links
 
-### Wireframes
+### [Wireframes](https://whimsical.com/librarize-it-78GzekZoidRZW7XkBh87za)
 
-### Notion
+### [Notion](https://www.notion.so/ed9213b008304d41a144fe3681e9efac?v=2fbe88c83c94441ea71458d657c965c6)
 
 ### Google Slides
 
-### Github
+### [Github Client Side](https://github.com/tammidnight/librarize-it-client)
 
-### Deployment
+### [Github Server Side](https://github.com/tammidnight/librarize-it-server)
+
+### [Deployment](http://librarize.it)
