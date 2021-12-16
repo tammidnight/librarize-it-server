@@ -36,7 +36,6 @@ const userSchema = new Schema(
           "Crime",
           "Crafts/hobbies",
           "Cookbook",
-          "Diary",
           "Dictionary",
           "Drama",
           "Encyclopedia",
@@ -79,6 +78,7 @@ const userSchema = new Schema(
         ],
       },
     ],
+    grid: Boolean,
     libraries: [
       {
         type: Schema.Types.ObjectId,
