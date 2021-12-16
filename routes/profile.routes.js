@@ -12,7 +12,6 @@ router.get("/profile/:id", (req, res) => {
   User.findById({ _id })
     .populate("libraries")
     .then((user) => {
-      console.log(user);
       res.status(200).json(user);
     })
     .catch((err) => {

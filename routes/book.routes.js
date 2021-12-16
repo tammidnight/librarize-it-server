@@ -12,7 +12,6 @@ router.post("/add-book", async (req, res) => {
   const currentUser = mongoose.Types.ObjectId(_id);
   const currentLibrary = mongoose.Types.ObjectId(library);
   let response = null;
-  console.log(isbn, library, _id);
 
   try {
     if (isbn.length === 13) {
