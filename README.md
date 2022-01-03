@@ -292,7 +292,7 @@ librarize it is a web application to sort your books into digital libraries. You
 
 ### [Notion](https://www.notion.so/ed9213b008304d41a144fe3681e9efac?v=2fbe88c83c94441ea71458d657c965c6)
 
-### Google Slides
+### [Google Slides](https://docs.google.com/presentation/d/1gumGjfCn1bbRsJMB7n6LvUa_OMaP2pHevz95I5ko-ow/edit?usp=sharing)
 
 ### [Github Client Side](https://github.com/tammidnight/librarize-it-client)
 

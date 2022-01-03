@@ -23,8 +23,8 @@ module.exports = (app) => {
   app.use(function (req, res, next) {
     var allowedDomains = [
       "http://localhost:3000",
-      "http://librarize.it",
-      "https://librarize-it.herokuapp.com",
+      "https://librarize.it", //https
+      "https://librarize-it-pnb6p2ufla-ez.a.run.app",
     ];
     var origin = req.headers.origin;
     if (allowedDomains.indexOf(origin) > -1) {
